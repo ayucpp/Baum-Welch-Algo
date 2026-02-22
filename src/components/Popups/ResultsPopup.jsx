@@ -80,6 +80,7 @@ export default function ResultsPopup({ convergenceData, onClose, hmmState }) {
                     height={isExp ? 200 : 120}
                     showGlowDot={true}
                     asymptoteDesc={asymptoteDesc}
+                    expandable={false}
                 />
             </div>
         );

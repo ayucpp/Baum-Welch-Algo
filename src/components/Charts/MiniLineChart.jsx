@@ -21,6 +21,7 @@ export default function MiniLineChart({
     height = 120,
     showGlowDot = false,
     asymptoteDesc = '',
+    expandable = true,
 }) {
     const [hoveredIdx, setHoveredIdx] = useState(null);
     const [expanded, setExpanded] = useState(false);
@@ -33,27 +34,31 @@ export default function MiniLineChart({
             {/* Compact sidebar chart */}
             <div style={{ width: '100%' }}>
                 {/* Title row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                        {title}
-                    </span>
-                    <button
-                        onClick={() => setExpanded(true)}
-                        title="Expand chart"
-                        style={{
-                            background: 'none',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: 4,
-                            color: 'var(--text-secondary)',
-                            cursor: 'pointer',
-                            padding: '1px 7px',
-                            fontSize: '11px',
-                            lineHeight: 1.6,
-                        }}
-                    >
-                        ⊕
-                    </button>
-                </div>
+                {(title || expandable) && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                            {title}
+                        </span>
+                        {expandable && (
+                            <button
+                                onClick={() => setExpanded(true)}
+                                title="Expand chart"
+                                style={{
+                                    background: 'none',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: 4,
+                                    color: 'var(--text-secondary)',
+                                    cursor: 'pointer',
+                                    padding: '1px 7px',
+                                    fontSize: '11px',
+                                    lineHeight: 1.6,
+                                }}
+                            >
+                                ⊕
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 <ChartSVG
                     filtered={filtered}
