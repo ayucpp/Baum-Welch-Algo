@@ -1536,3 +1536,123 @@ body {
 .matrix-input.updated {
   animation: cellHighlight 1.5s ease;
 }
+
+/* =============================================
+   Mobile Landscape Responsive Layout
+   Applies only to small handheld screens in landscape
+   ============================================= */
+@media (max-width: 1023px) and (orientation: landscape) {
+
+  /* Shrink header */
+  .app-header {
+    padding: 4px 10px;
+    min-height: 36px;
+  }
+
+  .app-title {
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .app-subtitle {
+    display: none;
+  }
+
+  .header-right {
+    gap: 6px;
+  }
+
+  .btn-theme-toggle,
+  .btn-info-toggle {
+    padding: 4px 6px;
+    font-size: 14px;
+  }
+
+  /* hide "Jerome" text label in header, keep the toggle switch */
+  .jerome-toggle .toggle-label {
+    display: none;
+  }
+
+  /* Left panel: icon-only strip */
+  .left-panel {
+    width: 48px !important;
+    min-width: 48px !important;
+    overflow: hidden;
+    padding: 4px !important;
+  }
+
+  .left-panel .panel-title,
+  .left-panel label:not(.jerome-toggle),
+  .left-panel input[type="text"],
+  .left-panel input[type="number"],
+  .left-panel .speed-group {
+    display: none !important;
+  }
+
+  .left-panel button {
+    font-size: 10px;
+    padding: 4px !important;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Right panel: slimmed down */
+  .right-panel {
+    width: 160px !important;
+    min-width: 120px !important;
+    font-size: 10px;
+  }
+
+  .right-panel .panel-section-title {
+    font-size: 10px;
+  }
+
+  .matrix-input {
+    width: 34px !important;
+    font-size: 9px !important;
+    padding: 2px !important;
+  }
+
+  /* Canvas fills all remaining width */
+  .canvas-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .canvas-wrapper svg {
+    width: 100% !important;
+  }
+
+  /* Compact control bar */
+  .control-bar {
+    padding: 6px 10px;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .step-label {
+    font-size: 10px;
+  }
+
+  /* Jerome compact */
+  .jerome-container {
+    bottom: 50px;
+    left: 52px;
+    max-width: 220px;
+  }
+
+  .jerome-speech {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .jerome-character .jerome-avatar {
+    font-size: 28px;
+  }
+
+  /* Zoom controls */
+  .canvas-zoom-controls {
+    bottom: 52px;
+    right: 6px;
+  }
+}

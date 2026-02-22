@@ -7,6 +7,7 @@ import RightPanel from './components/Panels/RightPanel.jsx';
 import ControlBar from './components/Controls/ControlBar.jsx';
 import Jerome from './components/Jerome/Jerome.jsx';
 import ResultsPopup from './components/Popups/ResultsPopup.jsx';
+import RotateOverlay from './components/RotateOverlay.jsx';
 
 /**
  * Main Application Shell
@@ -46,6 +47,7 @@ export default function App() {
 
   return (
     <div className="app-container">
+      <RotateOverlay />
       {/* Header */}
       <header className="app-header">
         <div className="header-left">
