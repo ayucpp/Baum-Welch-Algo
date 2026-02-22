@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ExpandedChartPopup from '../Popups/ExpandedChartPopup.jsx';
 import MatrixEditor from './MatrixEditor.jsx';
+import MiniLineChart from '../Charts/MiniLineChart.jsx';
 
 /**
  * Right Panel — parameters, matrices, log-likelihood chart
@@ -85,117 +86,8 @@ export default function RightPanel({ hmmState, algorithmState }) {
     const hiddenLabels = hiddenStates.map(s => s.label);
     const symLabels = symbols.length > 0 ? symbols : ['?'];
 
-    // ── Log-Likelihood Chart ──
-    const renderChart = () => {
-        if (logLikelihoods.length < 2) return null;
-        const min = Math.min(...logLikelihoods);
-        const max = Math.max(...logLikelihoods);
-        const range = max - min || 1;
-        const baseW = Math.max(230, rightPanelWidth - 40);
-        const baseH = 120;
-        const pad = 30;
+    // renderChart is now replaced by MiniLineChart below
 
-        const w = baseW * chartZoom;
-        const h = baseH * chartZoom;
-
-        const points = logLikelihoods.map((ll, i) => {
-            const x = pad + (i / (logLikelihoods.length - 1)) * (w - 2 * pad);
-            const y = h - pad - ((ll - min) / range) * (h - 2 * pad);
-            return `${x},${y}`;
-        }).join(' ');
-
-        return (
-            <div className="convergence-chart">
-                <div className="chart-header">
-                    <h3>Log-Likelihood</h3>
-                    <div className="chart-zoom-controls">
-                        <button
-                            className="chart-zoom-btn"
-                            onClick={() => setChartZoom(z => Math.max(0.5, z - 0.25))}
-                            title="Zoom out"
-                        >
-                            −
-                        </button>
-                        <span className="chart-zoom-label">{(chartZoom * 100).toFixed(0)}%</span>
-                        <button
-                            className="chart-zoom-btn"
-                            onClick={() => setChartZoom(z => Math.min(3, z + 0.25))}
-                            title="Zoom in"
-                        >
-                            +
-                        </button>
-                    </div>
-                </div>
-                <div className="chart-scroll-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width={w} height={h} className="chart-svg">
-                        {/* Grid lines */}
-                        {[0, 0.25, 0.5, 0.75, 1].map(frac => {
-                            const y2 = pad + frac * (h - 2 * pad);
-                            return (
-                                <line
-                                    key={frac}
-                                    x1={pad} y1={y2}
-                                    x2={w - pad} y2={y2}
-                                    stroke="var(--border-color)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="4 2"
-                                    opacity="0.5"
-                                />
-                            );
-                        })}
-
-                        {/* Axes */}
-                        <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="var(--text-muted)" strokeWidth="1" />
-                        <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="var(--text-muted)" strokeWidth="1" />
-
-                        {/* Gradient area */}
-                        <defs>
-                            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="var(--accent-blue)" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="var(--accent-blue)" stopOpacity="0" />
-                            </linearGradient>
-                        </defs>
-                        <polygon
-                            points={`${pad},${h - pad} ${points} ${pad + ((logLikelihoods.length - 1) / (logLikelihoods.length - 1)) * (w - 2 * pad)},${h - pad}`}
-                            fill="url(#chartGradient)"
-                        />
-
-                        {/* Line */}
-                        <polyline
-                            points={points}
-                            fill="none"
-                            stroke="var(--accent-blue)"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                        />
-
-                        {/* Dots */}
-                        {logLikelihoods.map((ll, i) => {
-                            const x = pad + (i / (logLikelihoods.length - 1)) * (w - 2 * pad);
-                            const y = h - pad - ((ll - min) / range) * (h - 2 * pad);
-                            return <circle key={i} cx={x} cy={y} r={3} fill="var(--accent-blue)" />;
-                        })}
-
-                        {/* Labels */}
-                        <text x={w / 2} y={h - 4} textAnchor="middle" fontSize="9" fill="var(--text-secondary)" fontFamily="Inter, sans-serif">Iteration</text>
-                        <text x={pad - 5} y={pad - 5} textAnchor="end" fontSize="8" fill="var(--text-secondary)" fontFamily="Inter, sans-serif">{max.toFixed(2)}</text>
-                        <text x={pad - 5} y={h - pad + 12} textAnchor="end" fontSize="8" fill="var(--text-secondary)" fontFamily="Inter, sans-serif">{min.toFixed(2)}</text>
-                    </svg>
-
-                    {/* Clickable Overlay to open expanded modal */}
-                    <div
-                        className="chart-expand-overlay"
-                        onClick={() => setIsExpandedChartOpen(true)}
-                        title="Click to expand chart"
-                        style={{
-                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                            cursor: 'zoom-in', zIndex: 10, background: 'transparent'
-                        }}
-                    />
-                </div>
-            </div>
-        );
-    };
 
     return (
         <>
@@ -211,7 +103,7 @@ export default function RightPanel({ hmmState, algorithmState }) {
                     {/* Collapse button moved to the right within the header */}
                     <button
                         className="panel-collapse-btn right"
-                        style={{ position: 'relative', top: '0', right: '0', marginLeft: 'auto' }}
+                        style={{ marginLeft: 'auto' }}
                         onClick={() => setRightPanelCollapsed(true)}
                         title="Collapse panel"
                     >
@@ -266,18 +158,41 @@ export default function RightPanel({ hmmState, algorithmState }) {
                         />
                     </div>
 
-                    {/* Convergence Chart */}
-                    {renderChart()}
+                    {/* ── All 3 convergence charts — realtime updates, expand popup, tooltips ── */}
+                    {logLikelihoods.length >= 2 && (() => {
+                        const pVals = logLikelihoods.map(ll => Math.exp(ll));
+                        const omP = pVals.map(p => 1 - Math.min(p, 1));
+                        const finalLL = logLikelihoods[logLikelihoods.length - 1];
+                        const finalP = Math.exp(finalLL);
+                        return (
+                            <div className="panel-section" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                <MiniLineChart
+                                    data={logLikelihoods}
+                                    color="var(--accent-blue)"
+                                    title="log P(O|λ) over Iterations"
+                                    xLabel="Iteration"
+                                    yLabel="log P(O|λ)"
+                                    height={120}
+                                    showGlowDot={true}
+                                    asymptoteDesc={`Asymptote ≈ ${finalLL.toFixed(4)}`}
+                                />
+                                <MiniLineChart
+                                    data={omP}
+                                    color="var(--accent-red)"
+                                    title="1 − P(O|λ) over Iterations"
+                                    xLabel="Iteration"
+                                    yLabel="1 − P(O|λ)"
+                                    height={120}
+                                    showGlowDot={true}
+                                    asymptoteDesc={`Residual ≈ ${(1 - Math.min(finalP, 1)).toExponential(3)}`}
+                                />
+                            </div>
+                        );
+                    })()}
+
                 </div>
             </div>
-
-            {/* Expanded Chart Modal */}
-            {isExpandedChartOpen && (
-                <ExpandedChartPopup
-                    logLikelihoods={logLikelihoods}
-                    onClose={() => setIsExpandedChartOpen(false)}
-                />
-            )}
         </>
     );
 }
+

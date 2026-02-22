@@ -20,18 +20,24 @@ export default function LeftPanel({ hmmState }) {
         generateObservedNodes(inputSeq);
     };
 
+    // Symbols that are part of the observation sequence — cannot be deleted
+    const obsSymbols = new Set(
+        inputSeq.trim().split(/\s+/).filter(Boolean).map(s => s.toUpperCase())
+    );
+
     const SPEED_OPTIONS = [0.25, 0.5, 1, 1.5, 2];
 
     return (
         <div className={`left-panel ${leftPanelCollapsed ? 'collapsed' : ''}`}>
-            {/* Collapse toggle */}
-            <button
-                className="panel-collapse-btn"
-                onClick={() => setLeftPanelCollapsed(prev => !prev)}
-                title={leftPanelCollapsed ? 'Expand panel' : 'Collapse panel'}
-            >
-                {leftPanelCollapsed ? '»' : '«'}
-            </button>
+            {leftPanelCollapsed && (
+                <button
+                    className="panel-collapse-btn"
+                    onClick={() => setLeftPanelCollapsed(false)}
+                    title="Expand panel"
+                >
+                    »
+                </button>
+            )}
 
             {!leftPanelCollapsed && (
                 <motion.div
@@ -40,8 +46,16 @@ export default function LeftPanel({ hmmState }) {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.2 }}
                 >
-                    <div className="panel-header">
+                    <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h2>📐 Model Setup</h2>
+                        <button
+                            className="panel-collapse-btn header-btn"
+                            style={{ marginLeft: 'auto' }}
+                            onClick={() => setLeftPanelCollapsed(true)}
+                            title="Collapse panel"
+                        >
+                            «
+                        </button>
                     </div>
 
                     {/* Observation sequence input */}
@@ -110,18 +124,23 @@ export default function LeftPanel({ hmmState }) {
                         <div className="panel-section delete-section">
                             <label className="input-label">Emission Symbols</label>
                             <div className="delete-items">
-                                {emissionNodes.map(n => (
-                                    <div key={n.id} className="delete-item">
-                                        <span className="delete-item-label">{n.label}</span>
-                                        <button
-                                            className="delete-item-btn"
-                                            onClick={() => deleteEmissionSymbol(n.id)}
-                                            title={`Delete ${n.label}`}
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
+                                {emissionNodes.map(n => {
+                                    const isFromObs = obsSymbols.has(n.label?.toUpperCase());
+                                    return (
+                                        <div key={n.id} className="delete-item">
+                                            <span className="delete-item-label">{n.label}</span>
+                                            {!isFromObs && (
+                                                <button
+                                                    className="delete-item-btn"
+                                                    onClick={() => deleteEmissionSymbol(n.id)}
+                                                    title={`Delete ${n.label}`}
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}

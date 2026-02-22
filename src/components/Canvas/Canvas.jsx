@@ -17,6 +17,11 @@ export default function Canvas({ hmmState, algorithmState }) {
     const { currentStep, alphaResult, betaResult, gammaResult, xiResult } = algorithmState;
     const svgRef = useRef(null);
 
+    // Single-slot hover: only one edge can glow at a time
+    const [hoveredEdgeId, setHoveredEdgeId] = useState(null);
+    const setEdgeHover = useCallback((id) => setHoveredEdgeId(id), []);
+    const clearEdgeHover = useCallback((id) => setHoveredEdgeId(prev => prev === id ? null : prev), []);
+
     // Zoom via mouse wheel
     const handleWheel = useCallback((e) => {
         if (e.ctrlKey || e.metaKey) {
@@ -104,11 +109,18 @@ export default function Canvas({ hmmState, algorithmState }) {
                     <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
                         <path d="M 30 0 L 0 0 0 30" fill="none" stroke="var(--grid-line)" strokeWidth="0.5" opacity="0.5" />
                     </pattern>
+                    <radialGradient id="abyssMask" cx="50%" cy="50%" r="60%">
+                        <stop offset="30%" stopColor="white" stopOpacity="1" />
+                        <stop offset="100%" stopColor="white" stopOpacity="0" />
+                    </radialGradient>
+                    <mask id="gridFade">
+                        <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="url(#abyssMask)" />
+                    </mask>
                 </defs>
 
                 {/* Background */}
                 <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="var(--canvas-bg)" />
-                <rect width="700" height="500" fill="url(#grid)" />
+                <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="url(#grid)" mask="url(#gridFade)" />
 
                 {/* Hint text when empty */}
                 {hiddenStates.length === 0 && emissionNodes.length === 0 && !algorithmMode && (
@@ -144,13 +156,16 @@ export default function Canvas({ hmmState, algorithmState }) {
                             const prob = transitionMatrix[i][j];
                             if (prob === undefined) return null;
                             const isSelf = i === j;
+                            const eid = `t-${i}-${j}`;
                             return (
                                 <Edge
-                                    key={`t-${i}-${j}`}
-                                    fromX={from.x}
-                                    fromY={from.y}
-                                    toX={to.x}
-                                    toY={to.y}
+                                    key={eid}
+                                    edgeId={eid}
+                                    isHovered={hoveredEdgeId === eid}
+                                    onEdgeHover={setEdgeHover}
+                                    onEdgeHoverEnd={clearEdgeHover}
+                                    fromX={from.x} fromY={from.y}
+                                    toX={to.x} toY={to.y}
                                     probability={prob}
                                     type="transition"
                                     isSelfLoop={isSelf}
@@ -171,13 +186,16 @@ export default function Canvas({ hmmState, algorithmState }) {
                             if (!emissionMatrix[i]) return null;
                             const prob = emissionMatrix[i][symIdx];
                             if (prob === undefined || prob < 0.01) return null;
+                            const eid = `e-${i}-${symIdx}`;
                             return (
                                 <Edge
-                                    key={`e-${i}-${symIdx}`}
-                                    fromX={h.x}
-                                    fromY={h.y}
-                                    toX={e.x}
-                                    toY={e.y}
+                                    key={eid}
+                                    edgeId={eid}
+                                    isHovered={hoveredEdgeId === eid}
+                                    onEdgeHover={setEdgeHover}
+                                    onEdgeHoverEnd={clearEdgeHover}
+                                    fromX={h.x} fromY={h.y}
+                                    toX={e.x} toY={e.y}
                                     probability={prob}
                                     type="emission"
                                     isSelfLoop={false}

@@ -1061,15 +1061,34 @@ body {
   line-height: 1;
 }
 
-.panel-collapse-btn:hover {
-  background: var(--accent-blue-light);
-  border-color: var(--accent-blue);
-  color: var(--accent-blue);
+/* Let flex headers position the button natively */
+.panel-header .panel-collapse-btn,
+.collapsed .panel-collapse-btn {
+  background: transparent;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-muted);
+  border-radius: 8px;
+  opacity: 0.8;
 }
 
-.panel-collapse-btn.right {
-  right: auto;
-  left: 8px;
+.panel-header .panel-collapse-btn {
+  position: static;
+  margin-left: auto;
+}
+
+.collapsed .panel-collapse-btn {
+  position: static;
+  margin: 0 auto;
+}
+
+.panel-header .panel-collapse-btn:hover,
+.collapsed .panel-collapse-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
 
 .left-panel {
@@ -1080,12 +1099,8 @@ body {
 .left-panel.collapsed {
   width: 32px !important;
   min-width: 32px !important;
-  padding: 8px 4px;
+  padding: 8px 0;
   overflow: hidden;
-}
-
-.left-panel.collapsed .panel-collapse-btn {
-  right: 4px;
 }
 
 .right-panel {
@@ -1096,7 +1111,7 @@ body {
 .right-panel.collapsed {
   width: 32px !important;
   min-width: 32px !important;
-  padding: 8px 4px;
+  padding: 8px 0;
   overflow: hidden;
 }
 
