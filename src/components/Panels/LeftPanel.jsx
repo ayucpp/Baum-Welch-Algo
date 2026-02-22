@@ -79,24 +79,6 @@ export default function LeftPanel({ hmmState }) {
                         </button>
                     </div>
 
-                    {/* Add controls */}
-                    <div className="panel-section">
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => addHiddenState()}
-                            disabled={algorithmMode}
-                        >
-                            + Add Hidden State
-                        </button>
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => addEmissionSymbol()}
-                            disabled={algorithmMode || symbols.length === 0}
-                            style={{ marginTop: '6px' }}
-                        >
-                            ➕ Add Emission Symbol
-                        </button>
-                    </div>
 
                     {/* Delete controls — hidden states */}
                     {hiddenStates.length > 0 && !algorithmMode && (

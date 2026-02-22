@@ -31,24 +31,27 @@ export default function MatrixEditor({ matrix, rowLabels, colLabels, onUpdate, h
                             transition={{ duration: 0.3 }}
                         >
                             <td className="matrix-row-label">{rowLabels[i]}</td>
-                            {row.map((val, j) => (
-                                <td key={j} className="matrix-cell">
-                                    <motion.input
-                                        type="number"
-                                        className="matrix-input"
-                                        value={val.toFixed(3)}
-                                        onChange={(e) => onUpdate(i, j, e.target.value)}
-                                        animate={{
-                                            scale: highlightRow === 'all' || highlightRow === i ? [1, 1.05, 1] : 1,
-                                        }}
-                                        transition={{ duration: 0.4 }}
-                                        step="0.01"
-                                        min="0"
-                                        max="1"
-                                        disabled={disabled}
-                                    />
-                                </td>
-                            ))}
+                            {colLabels.map((_, j) => {
+                                const val = row[j];
+                                return (
+                                    <td key={j} className="matrix-cell">
+                                        <motion.input
+                                            type="number"
+                                            className="matrix-input"
+                                            value={val != null ? val.toFixed(3) : '0.000'}
+                                            onChange={(e) => onUpdate(i, j, e.target.value)}
+                                            animate={{
+                                                scale: highlightRow === 'all' || highlightRow === i ? [1, 1.05, 1] : 1,
+                                            }}
+                                            transition={{ duration: 0.4 }}
+                                            step="0.01"
+                                            min="0"
+                                            max="1"
+                                            disabled={disabled}
+                                        />
+                                    </td>
+                                );
+                            })}
                         </motion.tr>
                     ))}
                 </tbody>

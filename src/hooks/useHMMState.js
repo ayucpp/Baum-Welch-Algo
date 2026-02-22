@@ -319,6 +319,16 @@ export function useHMMState() {
         setHiddenStates(prev => prev.map(s => s.id === id ? { ...s, label: newLabel } : s));
     }, []);
 
+    // Expose a function to rename an emission symbol label (only affects custom symbols)
+    const renameEmissionSymbol = useCallback((id, newLabel) => {
+        setSymbols(prev => {
+            const next = prev.map(s => s === id ? newLabel : s);
+            symbolsRef.current = next;
+            return next;
+        });
+        setEmissionNodes(prev => prev.map(s => s.id === id ? { ...s, id: newLabel, label: newLabel, symbol: newLabel } : s));
+    }, []);
+
     // ─── Obsidian-style spring-embedder layout ───────────────────────────────
     //
     // Exactly matches specification:
@@ -450,5 +460,7 @@ export function useHMMState() {
         getObsIndices,
         setParams,
         renameHiddenState,
+        renameEmissionSymbol,
+        observationSeq,
     };
 }

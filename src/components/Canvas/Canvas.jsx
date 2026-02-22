@@ -11,7 +11,7 @@ export default function Canvas({ hmmState, algorithmState }) {
     const {
         hiddenStates, emissionNodes, transitionMatrix, emissionMatrix,
         addHiddenState, addEmissionSymbol, moveHiddenState, moveEmissionNode, symbols, algorithmMode,
-        canvasZoom, setCanvasZoom, renameHiddenState,
+        canvasZoom, setCanvasZoom, renameHiddenState, renameEmissionSymbol, getObsIndices
     } = hmmState;
 
     const { currentStep, alphaResult, betaResult, gammaResult, xiResult } = algorithmState;
@@ -206,9 +206,20 @@ export default function Canvas({ hmmState, algorithmState }) {
                 </g>
 
                 {/* ─── Layer 3: Emission symbol nodes ─── */}
-                {emissionNodes.map((node) => (
-                    <EmissionNode key={node.id} {...node} onDrag={moveEmissionNode} />
-                ))}
+                {(() => {
+                    const obsSet = new Set(getObsIndices().map(idx => symbols[idx]).filter(Boolean));
+                    return emissionNodes.map((node) => {
+                        const isFromObs = obsSet.has(node.symbol);
+                        return (
+                            <EmissionNode
+                                key={node.id}
+                                {...node}
+                                onDrag={moveEmissionNode}
+                                onRename={(!algorithmMode && !isFromObs) ? renameEmissionSymbol : undefined}
+                            />
+                        );
+                    });
+                })()}
 
                 {/* ─── Layer 4: Hidden state nodes ─── */}
                 {hiddenStates.map((node, idx) => (
